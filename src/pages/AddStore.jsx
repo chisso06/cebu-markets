@@ -1,11 +1,20 @@
-import React, { useState } from 'react';
+import { addDoc, collection } from "firebase/firestore";
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from "react-router-dom";
+import StoreMap from "../components/StoreMap";
+import { db } from "./../config/firebase";
 
 const AddStore = () => {
+  const navigate = useNavigate();
+  const [isAvailable, setAvailable] = useState(false);
   const [store, setStore] = useState({
     name: '',
-    place: '',
+    lat: 0,
+    lng: 0,
     category: '',
     details: '',
+    plus: false,
+    password: '',
   });
 
   const handleChange = (e) => {
@@ -13,14 +22,35 @@ const AddStore = () => {
     setStore({ ...store, [name]: value });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    try {
+      const docRef = await addDoc(collection(db, "market"), store);
+      console.log("Document written with ID: ", docRef.id);
+      navigate("/");
+    } catch (err) {
+      console.error("Error adding document: ", err);
+    }
     console.log(store);
   };
 
+  useEffect(() => {
+    if ('geolocation' in navigator) {
+      setAvailable(true);
+    }
+    const getCurrentPosition = () => {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const { latitude, longitude } = position.coords;
+        console.log(latitude, longitude);
+        setStore({ ...store, lat: latitude, lng: longitude });
+      })
+    };
+    getCurrentPosition();
+  }, []);
+
   return (
-    <div>
+    <div className='my-10'>
       <h1 className='text-xl font-bold mb-6'>Add Store</h1>
-      <form className='form'>
+      <div className='form'>
         <div>
           <p>Store Name</p>
           <input type='text' name='name' onChange={handleChange} className='input' />
@@ -42,11 +72,23 @@ const AddStore = () => {
           </select>
         </div>
         <div>
+          <p>Location</p>
+          <StoreMap
+            page="add"
+            style={{ height: "200px", width: "100%" }}
+            stores={[store]}
+          />
+        </div>
+        <div>
           <p>Details</p>
           <textarea name='details' onChange={handleChange} className='textarea' />
         </div>
-        <button className='mx-auto mt-2 w-full btn' onChange={handleSubmit}>Submit</button>
-      </form>
+        <div>
+          <p>Admin Password</p>
+          <input type='password' name='password' onChange={handleChange} className='input' />
+        </div>
+        <button className='mx-auto w-full btn' onClick={handleSubmit}>Submit</button>
+      </div>
     </div>
   );
 };

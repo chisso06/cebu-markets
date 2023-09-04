@@ -1,3 +1,4 @@
+import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
 import {
@@ -14,9 +15,9 @@ import {
 
 function App() {
   return (
-    <div className="App flex flex-col min-h-screen bg-pink-50">
+    <div className="App flex flex-col h-screen bg-pink-50">
       <Header />
-      <div className='my-10 pt-10 flex-grow'>
+      <div className='my-10 overflow-scroll'>
         <BrowserRouter>
         <Routes>
           <Route path="/" element={<Top />} />
