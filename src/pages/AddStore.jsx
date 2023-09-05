@@ -16,6 +16,7 @@ const AddStore = () => {
     plus: false,
     password: '',
     time: '',
+    image: false,
   });
 
   const handleChange = (e) => {

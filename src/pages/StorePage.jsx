@@ -1,39 +1,45 @@
-import { doc, getDoc } from "firebase/firestore";
 import { getDownloadURL, ref } from "firebase/storage";
 import React, { useEffect, useState } from 'react';
 import { FaPen } from 'react-icons/fa';
 import { MdWorkspacePremium } from 'react-icons/md';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { StoreMap } from "../components";
-import { db, storage } from "./../config/firebase";
+import { getStore } from "../functions";
+import { storage } from "./../config/firebase";
 
 const StorePage = () => {
 	const { storeId } = useParams();
-	const navigate = useNavigate();
 	const [store, setStore] = useState({});
 	const [stores, setStores] = useState([]);
-	const [imageURI, setImageURI] = useState("");
+	const [imageURI, setImageURI] = useState("/default.png");
 
 	useEffect(() => {
-		const getStore = async () => {
-      console.log("GetStore");
-      try {
-        const storeRef = doc(db, "market", storeId);
-        const storeDoc = await getDoc(storeRef);
-        const store = storeDoc.data();
-        setStore(store);
-				setStores([store]);
-      } catch(err) {
-        console.log(err);
-      };
-    };
-		getStore();
-		getDownloadURL(ref(storage, "gs://eventgo-b229a.appspot.com/images/" + storeId + ".png"))
-			.then((url) => {
-				console.log(url);
-				setImageURI(url);
+		// const getStore = async () => {
+    //   console.log("GetStore");
+    //   try {
+    //     const storeRef = doc(db, "market", storeId);
+    //     const storeDoc = await getDoc(storeRef);
+    //     const store = storeDoc.data();
+    //     setStore(store);
+		// 		setStores([store]);
+    //   } catch(err) {
+    //     console.log(err);
+    //   };
+    // };
+		// getStore();
+		getStore(storeId)
+			.then((result) => {
+				setStore(result);
+				setStores([result]);
+				if (result.image) {
+					getDownloadURL(ref(storage, "gs://eventgo-b229a.appspot.com/images/" + storeId + ".png"))
+						.then((url) => {
+							console.log(url);
+							setImageURI(url);
+						})
+						.catch((err) => { console.log(err) })
+				}
 			})
-			.catch((err) => { console.log(err) })
 	}, []);
 
 	return (
@@ -54,7 +60,7 @@ const StorePage = () => {
 			{store.plus ? (
 				<img
 					src={imageURI}
-					alt='sampleImage1'
+					alt='StoreImage'
 					className="mb-6"
 				/>
 			) : (
@@ -89,19 +95,13 @@ const StorePage = () => {
 					<p className='font-bold'>Items:</p>
 				</div>
 			*/}
-			{/* {(() => {
-				if (store.length > 0) {
-					return ( */}
-						<div className="mt-5">
-							<StoreMap
-								page="store"
-								style={{ height: "200px", width: "100%" }}
-								stores={stores}
-							/>
-						</div>
-					{/* )
-				}
-			})()} */}
+			<div className="mt-5">
+				<StoreMap
+					page="store"
+					style={{ height: "200px", width: "100%" }}
+					stores={stores}
+				/>
+			</div>
 		</div>
 	);
 };

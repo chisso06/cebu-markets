@@ -27,11 +27,19 @@ const StoreList = () => {
 			<h1 className='text-xl font-bold mb-10'>Store List</h1>
 			<div className='flex flex-col mx-auto space-y-2 w-11/12'>
 				{stores.map((store, i) => {
-					return (
-						<a href={"/store/" + store.storeId} key={i} className="p-4 bg-white rounded">
-							{store.name}
-						</a>
-					)
+					if (store.plus) {
+						return (
+							<a href={"/store/" + store.storeId} key={i} className="p-4 bg-white rounded font-bold text-yellow-500">
+								{store.name}
+							</a>
+						)
+					} else {
+						return (
+							<a href={"/store/" + store.storeId} key={i} className="p-4 bg-white rounded font-bold">
+								{store.name}
+							</a>
+						)
+					}
 				})}
 			</div>
 		</div>

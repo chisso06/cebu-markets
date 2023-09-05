@@ -1,8 +1,6 @@
-import { doc, getDoc, setDoc } from "firebase/firestore";
-import { ref, uploadBytes } from "firebase/storage";
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { db, storage } from "./../config/firebase";
+import { getStore, updateStore } from "../functions";
 
 const EditStore = () => {
   const { storeId } = useParams();
@@ -11,53 +9,51 @@ const EditStore = () => {
   const [image, setImage] = useState("");
 
   const handleChange = (e) => {
-    const {name, value} = e.target;
-    setStore({ ...store, [name]: value });
-    console.log(name, value);
+    if (store !== {}) {
+      const {name, value} = e.target;
+      setStore({ ...store, [name]: value });
+      console.log(name, value);
+    }
   };
 
   const handleImage = (e) => {
-    console.log(e.target.files[0]);
-    setImage(e.target.files[0]);
+    if (store !== {}) {
+      console.log(e.target.files[0]);
+      setImage(e.target.files[0]);
+    }
   };
 
   const handleSubmit = async () => {
     try {
-      console.log("UpdateStore", store);
-      const storeRef = doc(db, "market", storeId);
-      await setDoc(storeRef, store, { merge: true });
-      console.log("updated store Id: ", storeId);
-      if (image !== "") {
-        const storageRef = ref(storage, "images/" + storeId + ".png");
-        uploadBytes(storageRef, image);
-        console.log("image uploaded: " + storeId);
+      if (store !== {}) {
+        updateStore(storeId, store, image);
+        navigate("/store/" + storeId);
       }
-      navigate("/store/" + storeId);
     } catch (err) {
       console.log(err);
     }
   };
 
+  const handleUpgrade = async () => {
+    const token = window.prompt("Enter Token");
+    if (token === process.env.REACT_APP_UPGRADE_TOKEN) {
+      updateStore(storeId, { ...store, plus: true });
+      navigate("/store/" + storeId);
+    }
+  };
+
   useEffect(() => {
-		const getStore = async () => {
-      console.log("GetStore");
-      try {
-        const storeRef = doc(db, "market", storeId);
-        const storeDoc = await getDoc(storeRef);
-        const store = storeDoc.data();
-        setStore(store);
-        const password = window.prompt("Admin Password");
-        if (password !== store.password) {
-          console.log(password, store.password);
+    const password = window.prompt("Admin Password");
+    getStore(storeId)
+      .then((result) => {
+        if (password !== result.password) {
+          console.log(password, result.password);
           alert("incorrect password");
           navigate("/store/" + storeId);
+        } else {
+          setStore(result);
         }
-      } catch(err) {
-        console.log(err);
-        // navigate("/store/" + storeId);
-      };
-    };
-		getStore();
+      })
   }, []);
 
   return (
@@ -108,6 +104,13 @@ const EditStore = () => {
           <textarea name='details' value={store.details} onChange={handleChange} className='textarea' />
         </div>
         <button className='mx-auto w-full btn' onClick={handleSubmit}>Submit</button>
+        {(() => {
+          if (!store.plus) {
+            return (
+              <button onClick={handleUpgrade} className="w-full btn bg-yellow-500">Upgrade to Premium for 100PHP</button>
+            )
+          }
+        })()}
       </div>
     </div>
   );

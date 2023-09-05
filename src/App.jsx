@@ -2,8 +2,7 @@ import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
 import {
-  Footer,
-  Header
+  Footer
 } from './components';
 import {
   AddStore,
@@ -17,8 +16,8 @@ import {
 function App() {
   return (
     <div className="App flex flex-col h-screen bg-pink-50">
-      <Header />
-      <div className='my-10 overflow-scroll'>
+      {/* <Header /> */}
+      <div className='mb-16 overflow-scroll'>
         <BrowserRouter>
         <Routes>
           <Route path="/" element={<Top />} />

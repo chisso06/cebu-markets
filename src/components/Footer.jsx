@@ -3,7 +3,7 @@ import { FaHome, FaPlus, FaStore } from 'react-icons/fa';
 
 const Footer = () => {
 	return (
-		<div className='w-full h-12 flex space-x-2 bg-lime-300 absolute bottom-0'>
+		<div className='w-full h-16 pb-4 flex space-x-2 bg-lime-300 absolute bottom-0'>
 			<div className='flex-1 m-auto'>
 				<a href='/' className='text-2xl'><FaHome className='m-auto' /></a>
 			</div>
