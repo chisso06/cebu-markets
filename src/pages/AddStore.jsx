@@ -15,6 +15,7 @@ const AddStore = () => {
     details: '',
     plus: false,
     password: '',
+    time: '',
   });
 
   const handleChange = (e) => {
@@ -69,6 +70,15 @@ const AddStore = () => {
             <option value='sundries'>sundries</option>
             <option value='accessories'>accessories</option>
             <option value='other'>other</option>
+          </select>
+        </div>
+        <div>
+          <p>Time</p>
+          <select name='time' className='input'>
+            <option value='' selected disabled></option>
+            <option value='daytime'>daytime</option>
+            <option value='night'>night</option>
+            <option value='all day'>all day</option>
           </select>
         </div>
         <div>

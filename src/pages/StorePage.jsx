@@ -4,12 +4,14 @@ import React, { useEffect, useState } from 'react';
 import { FaPen } from 'react-icons/fa';
 import { MdWorkspacePremium } from 'react-icons/md';
 import { useNavigate, useParams } from 'react-router-dom';
+import { StoreMap } from "../components";
 import { db, storage } from "./../config/firebase";
 
 const StorePage = () => {
 	const { storeId } = useParams();
 	const navigate = useNavigate();
 	const [store, setStore] = useState({});
+	const [stores, setStores] = useState([]);
 	const [imageURI, setImageURI] = useState("");
 
 	useEffect(() => {
@@ -20,14 +22,12 @@ const StorePage = () => {
         const storeDoc = await getDoc(storeRef);
         const store = storeDoc.data();
         setStore(store);
+				setStores([store]);
       } catch(err) {
         console.log(err);
       };
     };
 		getStore();
-		if (store.plus === false) {
-			navigate("/");
-		}
 		getDownloadURL(ref(storage, "gs://eventgo-b229a.appspot.com/images/" + storeId + ".png"))
 			.then((url) => {
 				console.log(url);
@@ -39,17 +39,28 @@ const StorePage = () => {
 	return (
 		<div className='w-5/6 mx-auto my-10'>
 			<div className='mb-6 flex justify-center items-center'>
-				<MdWorkspacePremium className='mr-0.5 text-2xl text-yellow-500' />
-				<h1 className='text-xl font-bold text-yellow-500'>{store.name}</h1>
+				{store.plus ?
+					<MdWorkspacePremium className='mr-0.5 text-2xl text-yellow-500' /> : <></>
+				}
+				{store.plus ?
+					<h1 className='text-xl font-bold text-yellow-500'>{store.name}</h1>
+					:
+					<h1 className='text-xl font-bold'>{store.name}</h1>
+				}
 				<a href={'/store/' + storeId + '/edit'}>
 					<FaPen className='ml-2 text-gray-400' />
 				</a>
 			</div>
-			<img
-				src={imageURI}
-				alt='sampleImage1'
-				className="mb-6"
-			/>
+			{store.plus ? (
+				<img
+					src={imageURI}
+					alt='sampleImage1'
+					className="mb-6"
+				/>
+			) : (
+				<></>
+			)}
+			
 			{/* <div className="flex mb-6 overflow-x-auto">
 				<div className="flex-none w-full">
 					<img src='/samples/sample1.jpg' alt='sampleImage1' />
@@ -70,11 +81,27 @@ const StorePage = () => {
 			<p className='text-left'>
 				<strong>Details: </strong>{store.details}
 			</p>
+			<p className='text-left'>
+				<strong>Time: </strong>{store.time}
+			</p>
 			{/*
 				<div>
 					<p className='font-bold'>Items:</p>
 				</div>
 			*/}
+			{/* {(() => {
+				if (store.length > 0) {
+					return ( */}
+						<div className="mt-5">
+							<StoreMap
+								page="store"
+								style={{ height: "200px", width: "100%" }}
+								stores={stores}
+							/>
+						</div>
+					{/* )
+				}
+			})()} */}
 		</div>
 	);
 };

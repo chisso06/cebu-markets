@@ -11,7 +11,7 @@ const Footer = () => {
 				<a href='/add' className='text-2xl'><FaPlus className='m-auto' /></a>
 			</div>
 			<div className='flex-1 m-auto'>
-				<a href='/store/1' className='text-2xl'><FaStore className='m-auto' /></a>
+				<a href='/storelist' className='text-2xl'><FaStore className='m-auto' /></a>
 			</div>
 		</div>
 	);

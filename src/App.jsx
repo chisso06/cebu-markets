@@ -8,6 +8,7 @@ import {
 import {
   AddStore,
   EditStore,
+  StoreList,
   StorePage,
   Test,
   Top,
@@ -24,6 +25,7 @@ function App() {
           <Route path="/add" element={<AddStore />} />
           <Route path="/store/:storeId" element={<StorePage />} />
           <Route path="/store/:storeId/edit" element={<EditStore />} />
+          <Route path="/storelist" element={<StoreList />} />
           <Route path="/test" element={<Test />} />
         </Routes>
         </BrowserRouter>

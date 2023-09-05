@@ -2,10 +2,10 @@ import MapboxLanguage from "@mapbox/mapbox-gl-language";
 import React, { useState } from "react";
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import { Map, Marker, NavigationControl } from 'react-map-gl';
-import { StoreModal } from './index';
 
 const StoreMap = ({page, style, stores}) => {
-	const [showModal, setShowModal] = useState(false);
+	console.log(stores);
+	// const [showModal, setShowModal] = useState(false);
 	const [zoom, setZoom] = useState(15);
 
   const onLoadMap = (e) => {
@@ -20,9 +20,9 @@ const StoreMap = ({page, style, stores}) => {
     }
   }
 
-	const openModal = () => {
-		setShowModal(true);
-	}
+	// const openModal = () => {
+	// 	setShowModal(true);
+	// }
 
 	return (
 		<Map
@@ -37,38 +37,36 @@ const StoreMap = ({page, style, stores}) => {
 			attributionControl={false}
 			// onDragEnd={onDragEnd}
 			onLoad={onLoadMap}
-			>
+		>
 			{stores.map((store, i) => { return (
 				<div key={i}>
 					<Marker
 						latitude={store.lat}
 						longitude={store.lng}
 					>{(() => {
-							if (page === "add") {
-								console.log("add pin");
-								return (<FaMapMarkerAlt className="text-pink-500" />)
-							} else if (store.plus) {
-								console.log("plus pin");
-								return (
-									<a href={"/store/" + store.storeId}>
-										<FaMapMarkerAlt className="text-yellow-500"/>
-									</a>
-								);
-							} else {
-								console.log("normal pin");
-								return (
-									<button onClick={openModal} className="text-lime-500">
-										<FaMapMarkerAlt />
-									</button>
-								)
-							}
-						})()}
+						if (page === "add" || page === "store") {
+							return (<FaMapMarkerAlt className="text-pink-500 text-2xl" />)
+						} else if (store.plus) {
+							return (
+								<a href={"/store/" + store.storeId}>
+									<FaMapMarkerAlt className="text-yellow-500 text-lg" />
+								</a>
+							);
+						} else {
+							console.log("normal pin");
+							return (
+								<a href={"/store/" + store.storeId}>
+									<FaMapMarkerAlt className="text-lg" />
+								</a>
+							)
+						}
+					})()}
 					</Marker>
-					{showModal ? (
+					{/* {showModal ? (
 						<StoreModal store={store} setShowModal={setShowModal} />
 					) : (
 						<></>
-					)}
+					)} */}
 				</div>
 			)})}
 			<NavigationControl />

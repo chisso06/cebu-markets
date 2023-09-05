@@ -19,7 +19,7 @@ const EditStore = () => {
   const handleImage = (e) => {
     console.log(e.target.files[0]);
     setImage(e.target.files[0]);
-  }
+  };
 
   const handleSubmit = async () => {
     try {
@@ -27,8 +27,11 @@ const EditStore = () => {
       const storeRef = doc(db, "market", storeId);
       await setDoc(storeRef, store, { merge: true });
       console.log("updated store Id: ", storeId);
-      const storageRef = ref(storage, "images/" + storeRef.id + ".png");
-      uploadBytes(storageRef, image).then((snapshot) => {})
+      if (image !== "") {
+        const storageRef = ref(storage, "images/" + storeId + ".png");
+        uploadBytes(storageRef, image);
+        console.log("image uploaded: " + storeId);
+      }
       navigate("/store/" + storeId);
     } catch (err) {
       console.log(err);
@@ -43,12 +46,12 @@ const EditStore = () => {
         const storeDoc = await getDoc(storeRef);
         const store = storeDoc.data();
         setStore(store);
-        // const password = window.prompt("Admin Password");
-        // if (password !== store.password) {
-        //   console.log(password, store.password);
-        //   alert("incorrect password");
-        //   navigate("/store/" + storeId);
-        // }
+        const password = window.prompt("Admin Password");
+        if (password !== store.password) {
+          console.log(password, store.password);
+          alert("incorrect password");
+          navigate("/store/" + storeId);
+        }
       } catch(err) {
         console.log(err);
         // navigate("/store/" + storeId);
@@ -81,12 +84,21 @@ const EditStore = () => {
             <option value='other'>other</option>
           </select>
         </div>
+        <div>
+          <p>Time</p>
+          <select name='time' className='input' onChange={handleChange} value={store.time}>
+            <option value='' selected disabled></option>
+            <option value='daytime'>daytime</option>
+            <option value='night'>night</option>
+            <option value='all day'>all day</option>
+          </select>
+        </div>
         {(() => {
           if (store.plus) {
             return (
               <div>
                 <p>Image</p>
-                <input type='file' id='file' className='input' />
+                <input type='file' id='file' className='input' onChange={handleImage} />
               </div>
             )
           }
